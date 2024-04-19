@@ -7,6 +7,7 @@ import 'package:teslo_shop/features/shared/infrastructure/services/key_value_sto
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authRepository = AuthRepositoryImpl();
   final keyValueStorageService = KeyValueStorageServiceImpl();
+
   return AuthNotifier(
       authRepository: authRepository,
       keyValueStorageService: keyValueStorageService);
@@ -15,9 +16,11 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository authRepository;
   final KeyValueStorageService keyValueStorageService;
-  AuthNotifier(
-      {required this.authRepository, required this.keyValueStorageService})
-      : super(AuthState()) {
+
+  AuthNotifier({
+    required this.authRepository,
+    required this.keyValueStorageService,
+  }) : super(AuthState()) {
     checkAuthStatus();
   }
 
@@ -40,8 +43,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void registerUser(String email, String password) async {}
 
   void checkAuthStatus() async {
-    final token = await keyValueStorageService.getValue('token');
+    final token = await keyValueStorageService.getValue<String>('token');
     if (token == null) return logout();
+
     try {
       final user = await authRepository.checkAuthStatus(token);
       _setLoggedUser(user);
@@ -52,7 +56,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void _setLoggedUser(User user) async {
     await keyValueStorageService.setKeyValue('token', user.token);
-    // TODO: necesito guardar el token físicamente
+
     state = state.copyWith(
       user: user,
       authStatus: AuthStatus.authenticated,
@@ -61,14 +65,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout([String? errorMessage]) async {
-    //remover el token
-    await keyValueStorageService.removeKey('token');
+    try {
+      await keyValueStorageService.removeKey('token');
+      print('Token removed');
 
-    // TODO: limpiar token
-    state = state.copyWith(
-        authStatus: AuthStatus.notAuthenticated,
-        user: null,
-        errorMessage: errorMessage);
+      state = state.copyWith(
+          authStatus: AuthStatus.notAuthenticated,
+          user: null,
+          errorMessage: errorMessage);
+      print('State updated: $state');
+    } catch (e) {
+      print('Error during logout: $e');
+    }
   }
 }
 
