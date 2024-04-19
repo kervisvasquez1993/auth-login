@@ -97,7 +97,9 @@ class _LoginForm extends ConsumerWidget {
                 text: 'Ingresar',
                 buttonColor: Colors.black,
                 onPressed: () {
-                  ref.read(loginFormProvider.notifier).onFormSubmit();
+                  loginForm.isPosting
+                      ? null
+                      : ref.read(loginFormProvider.notifier).onFormSubmit();
                 },
               )),
           const Spacer(flex: 2),
