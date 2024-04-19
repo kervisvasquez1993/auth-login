@@ -40,7 +40,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void registerUser(String email, String password) async {}
 
   void checkAuthStatus() async {
-    final token = await keyValueStorageService.getKeyValue('token');
+    final token = await keyValueStorageService.getValue('token');
     if (token == null) return logout();
     try {
       final user = await authRepository.checkAuthStatus(token);
