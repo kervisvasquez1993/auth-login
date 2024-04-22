@@ -85,6 +85,8 @@ class _LoginForm extends ConsumerWidget {
           CustomTextFormField(
             label: 'Contraseña',
             obscureText: true,
+            onFieldSubmitted: (_) =>
+                ref.read(loginFormProvider.notifier).onFormSubmit(),
             onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
             errorMessage:
                 loginForm.isFormPosted ? loginForm.password.errorMessage : null,
@@ -97,6 +99,8 @@ class _LoginForm extends ConsumerWidget {
                 text: 'Ingresar',
                 buttonColor: Colors.black,
                 onPressed: () {
+                  //esto hace que se quite el teclado
+                  FocusManager.instance.primaryFocus?.unfocus();
                   loginForm.isPosting
                       ? null
                       : ref.read(loginFormProvider.notifier).onFormSubmit();
