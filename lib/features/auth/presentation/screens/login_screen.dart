@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:teslo_shop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:teslo_shop/features/auth/presentation/providers/providers.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
@@ -85,9 +86,9 @@ class _LoginForm extends ConsumerWidget {
           CustomTextFormField(
             label: 'Contraseña',
             obscureText: true,
+            onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
             onFieldSubmitted: (_) =>
                 ref.read(loginFormProvider.notifier).onFormSubmit(),
-            onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
             errorMessage:
                 loginForm.isFormPosted ? loginForm.password.errorMessage : null,
           ),
@@ -96,16 +97,11 @@ class _LoginForm extends ConsumerWidget {
               width: double.infinity,
               height: 60,
               child: CustomFilledButton(
-                text: 'Ingresar',
-                buttonColor: Colors.black,
-                onPressed: () {
-                  //esto hace que se quite el teclado
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  loginForm.isPosting
+                  text: 'Ingresar',
+                  buttonColor: Colors.black,
+                  onPressed: loginForm.isPosting
                       ? null
-                      : ref.read(loginFormProvider.notifier).onFormSubmit();
-                },
-              )),
+                      : ref.read(loginFormProvider.notifier).onFormSubmit)),
           const Spacer(flex: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
