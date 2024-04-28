@@ -18,28 +18,31 @@ class ProductScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productState = ref.watch(productProvider(productId));
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar producto'),
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_rounded))
-        ],
-      ),
-      body: productState.isLoading
-          ? const FullScreenLoader()
-          : _ProductView(product: productState.product!),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (productState.product == null) return;
-          ref
-              .read(productFormProvider(productState.product!).notifier)
-              .onFormSubmit()
-              .then((value) {
-            if (!value) return;
-            showSnackBar(context);
-          });
-        },
-        child: const Icon(Icons.save_alt_outlined),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Editar producto'),
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_rounded))
+          ],
+        ),
+        body: productState.isLoading
+            ? const FullScreenLoader()
+            : _ProductView(product: productState.product!),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (productState.product == null) return;
+            ref
+                .read(productFormProvider(productState.product!).notifier)
+                .onFormSubmit()
+                .then((value) {
+              if (!value) return;
+              showSnackBar(context);
+            });
+          },
+          child: const Icon(Icons.save_alt_outlined),
+        ),
       ),
     );
   }
