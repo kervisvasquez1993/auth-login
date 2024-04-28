@@ -8,6 +8,12 @@ import 'package:teslo_shop/features/shared/widgets/widgets.dart';
 class ProductScreen extends ConsumerWidget {
   final String productId;
   const ProductScreen({required this.productId, super.key});
+  void showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Producto guardado correctamente'),
+    ));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +33,11 @@ class ProductScreen extends ConsumerWidget {
           if (productState.product == null) return;
           ref
               .read(productFormProvider(productState.product!).notifier)
-              .onFormSubmit();
+              .onFormSubmit()
+              .then((value) {
+            if (!value) return;
+            showSnackBar(context);
+          });
         },
         child: const Icon(Icons.save_alt_outlined),
       ),
@@ -54,7 +64,11 @@ class _ProductView extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         Center(
-            child: Text(productForm.title.value, style: textStyles.titleSmall)),
+            child: Text(
+          productForm.title.value,
+          style: textStyles.titleSmall,
+          textAlign: TextAlign.center,
+        )),
         const SizedBox(height: 10),
         _ProductInformation(product: product),
       ],
